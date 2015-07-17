@@ -1,4 +1,4 @@
-package com.vrexplorer.vr360video;
+package com.vrexplorer.vr360photos;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -31,14 +31,14 @@ public class MainActivity extends RajawaliVRActivity {
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        setRenderer(new VR360VideoRenderer(this));
+        setRenderer(new VR360PhotosRenderer(this));
 
         setConvertTapIntoTrigger(true);
     }
 
-    private class VR360VideoRenderer extends RajawaliVRRenderer {
+    private class VR360PhotosRenderer extends RajawaliVRRenderer {
 
-        public VR360VideoRenderer(Context context) {
+        public VR360PhotosRenderer(Context context) {
             super(context);
         }
 
