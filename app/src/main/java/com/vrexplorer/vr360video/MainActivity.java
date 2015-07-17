@@ -1,38 +1,75 @@
 package com.vrexplorer.vr360video;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
+
+import com.vrexplorer.rajawalivr.RajawaliVRActivity;
+import com.vrexplorer.rajawalivr.RajawaliVRRenderer;
+
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.Texture;
+import org.rajawali3d.math.vector.Vector3;
+import org.rajawali3d.primitives.Sphere;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends RajawaliVRActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+                        | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        setRenderer(new VR360VideoRenderer(this));
+
+        setConvertTapIntoTrigger(true);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    private class VR360VideoRenderer extends RajawaliVRRenderer {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        public VR360VideoRenderer(Context context) {
+            super(context);
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        public void initScene() {
+            Sphere sphere = createPhotoSphereWithTexture(new Texture("photo", R.drawable.panorama));
+            getCurrentScene().addChild(sphere);
+
+            getCurrentCamera().setPosition(Vector3.ZERO);
+            getCurrentCamera().setFieldOfView(75);
+
+            super.initScene();
+        }
+
+        private Sphere createPhotoSphereWithTexture(ATexture texture) {
+            Material material = new Material();
+            material.setColor(0);
+
+            try {
+                material.addTexture(texture);
+            } catch (ATexture.TextureException e) {
+                throw new RuntimeException(e);
+            }
+
+            Sphere sphere = new Sphere(50, 64, 32);
+            sphere.setScaleX(-1);
+            sphere.setMaterial(material);
+
+            return sphere;
+        }
+
     }
+
 }
